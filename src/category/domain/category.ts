@@ -7,6 +7,8 @@ export interface Category {
   name: string;
 }
 
+export type EditableCategoryProps = Omit<Partial<Category>, 'id'>;
+
 export const createCategory = (name: string): Category => {
   return {
     id: generateUUID(),

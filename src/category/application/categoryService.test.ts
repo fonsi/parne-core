@@ -11,47 +11,78 @@ describe('categoryService', () => {
         categoryService = buildCategoryService(repository);
     });
 
-    test('should add a category', async () => {
-        let allCategories = await repository.category.getAll();
+    test('should add and remove a category', async () => {
+        let allCategories = await categoryService.getAll();
 
         expect(allCategories.length).toEqual(0);
         
         const categoryName = 'category 1';
         const category = await categoryService.add(categoryName);
 
-        allCategories = await repository.category.getAll();
+        allCategories = await categoryService.getAll();
 
         expect(allCategories.length).toEqual(1);
         expect(allCategories[0].name).toEqual(categoryName);
         expect(allCategories[0].name).toEqual(category.name);
         expect(allCategories[0].id).toEqual(expect.stringMatching(/\S/));
+
+        await categoryService.remove(category.id);
+
+        allCategories = await categoryService.getAll();
+        expect(allCategories.length).toEqual(0);
     });
 
-    test('should add multiple categories', async () => {        
-        const firstCategory = 'category 1';
-        const secondCategory = 'category 2';
-        await categoryService.add(firstCategory);
-        await categoryService.add(secondCategory);
+    test('should add and remove multiple categories', async () => {        
+        const firstCategoryName = 'category 1';
+        const secondCategoryName = 'category 2';
+        const firstCategory = await categoryService.add(firstCategoryName);
+        const secondCategory = await categoryService.add(secondCategoryName);
 
-        const allCategories = await repository.category.getAll();
+        let allCategories = await categoryService.getAll();
 
         expect(allCategories.length).toEqual(2);
-        expect(allCategories[0].name).toEqual(firstCategory);
-        expect(allCategories[1].name).toEqual(secondCategory);
+        expect(allCategories[0].name).toEqual(firstCategoryName);
+        expect(allCategories[1].name).toEqual(secondCategoryName);
+
+        await categoryService.remove(firstCategory.id);
+        allCategories = await categoryService.getAll();
+        
+        expect(allCategories.length).toEqual(1);
+        expect(allCategories[0]).toEqual(secondCategory);
     });
 
     test('should get a category by id', async () => {        
         const firstCategory = await categoryService.add('category 1');
         const secondCategory = await categoryService.add('category 2');
 
-        expect(await repository.category.getById(firstCategory.id)).toEqual(firstCategory);
-        expect(await repository.category.getById(secondCategory.id)).toEqual(secondCategory);
+        expect(await categoryService.getById(firstCategory.id)).toEqual(firstCategory);
+        expect(await categoryService.getById(secondCategory.id)).toEqual(secondCategory);
     });
 
-    test('should return null if a category does not exists', async () => {        
+    test('should return null if trying to get a category that does not exists', async () => {        
         const firstCategory = await categoryService.add('category 1');
 
-        expect(await repository.category.getById(firstCategory.id)).toEqual(firstCategory);
-        expect(await repository.category.getById('randomId')).toBeNull();
+        expect(await categoryService.getById(firstCategory.id)).toEqual(firstCategory);
+        expect(await categoryService.getById('randomId')).toBeNull();
+    });
+
+    test('should return null if trying to remove a category that does not exists', async () => {        
+        await categoryService.add('category 1');
+
+        expect(await categoryService.remove('randomId')).toBeNull();
+    });
+
+    test('should update category props', async () => {        
+        const categoryName = 'category';
+        const category = await categoryService.add(categoryName);
+
+        expect(await categoryService.getById(category.id)).toEqual(category);
+        
+        const newCategoryName = 'new category';
+        const updatedCategory = await categoryService.update(category, { name: newCategoryName });
+
+        expect(await categoryService.getById(category.id)).toEqual(updatedCategory);
+        expect(updatedCategory.id).toEqual(category.id);
+        expect(updatedCategory.name).toEqual(newCategoryName);
     });
 });
