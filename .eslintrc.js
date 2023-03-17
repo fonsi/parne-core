@@ -17,6 +17,7 @@ module.exports = {
   },
   rules: {
     'semi': ['error', 'always'],
-    '@typescript-eslint/strict-boolean-expressions': 'off'
+    '@typescript-eslint/strict-boolean-expressions': 'off',
+    'no-async-promise-executor': 'off',
   }
 }
