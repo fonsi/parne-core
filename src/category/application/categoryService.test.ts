@@ -25,7 +25,6 @@ describe('categoryService', () => {
         expect(allCategories[0].name).toEqual(categoryName);
         expect(allCategories[0].name).toEqual(category.name);
         expect(allCategories[0].id).toEqual(expect.stringMatching(/\S/));
-        expect(allCategories[0].items.length).toEqual(0);
     });
 
     test('should add multiple categories', async () => {        
@@ -39,28 +38,6 @@ describe('categoryService', () => {
         expect(allCategories.length).toEqual(2);
         expect(allCategories[0].name).toEqual(firstCategory);
         expect(allCategories[1].name).toEqual(secondCategory);
-    });
-
-    test('should add a category with items', async () => {        
-        const categoryName = 'category';
-        const items = [
-            {
-                name: 'item',
-                amounts: [
-                    {
-                        qty: 20,
-                        initDate: Date.now(),
-                    }
-                ]
-            }   
-        ];
-        const category = await categoryService.add(categoryName, items);
-
-        const allCategories = await repository.category.getAll();
-
-        expect(allCategories[0].name).toEqual(categoryName);
-        expect(allCategories[0].items).toEqual(items);
-        expect(category.items).toEqual(items);
     });
 
     test('should get a category by id', async () => {        

@@ -6,10 +6,10 @@ export const buildInMemoryRepository = (): ParneRepository => {
 
   const init: Init = async () => await Promise.resolve();
 
-  const add: AddCategory = async (name, items) =>
+  const add: AddCategory = async (name) =>
     await new Promise((resolve, reject) => {
       try {
-        const category = createCategory(name, items);
+        const category = createCategory(name);
         categories[category.id] = category;
         
         resolve(category);
